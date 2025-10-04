@@ -2,7 +2,7 @@ package com.project.smart_citas.controller;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.project.smart_citas.dao.PacienteDao;
+import com.project.smart_citas.dao.UsuarioDao;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -12,47 +12,43 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 
-@WebServlet("/register")
-public class RegisterServlet extends HttpServlet {
+@WebServlet("/login")
+public class LoginServlet extends HttpServlet {
 
-    private PacienteDao pacienteDao = new PacienteDao();
+    private UsuarioDao usuarioDao = new UsuarioDao();
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         BufferedReader reader = req.getReader();
         StringBuilder sb = new StringBuilder();
+
         String line;
-        while ((line = reader.readLine()) != null) {
+        while((line = reader.readLine()) != null){
             sb.append(line);
         }
         String requestBody = sb.toString();
-
         JsonObject json = JsonParser.parseString(requestBody).getAsJsonObject();
 
-        String nombre = json.get("nombre").getAsString();
-        String primerApellido = json.get("primer-apellido").getAsString();
-        String segundoApellido = json.get("segundo-apellido").getAsString();
-        String correo = json.get("correo").getAsString();
+        String email = json.get("email").getAsString();
         String clave = json.get("clave").getAsString();
 
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
 
-        try {
-            Integer idPaciente = pacienteDao.insertar(nombre, primerApellido, segundoApellido, correo, clave);
+        try{
+            Integer idUsuario = usuarioDao.obterUsuario(email, clave);
 
-            if (idPaciente == null) {
-                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                resp.getWriter().write("{\"success\": false, \"message\": \"Error al registrar el paciente.\"}");
-            } else {
+            if(idUsuario == null){
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                resp.getWriter().write("{\"success\": false, \"message\": \"Usuario no encontrado\"}");
+            }else{
                 resp.setStatus(HttpServletResponse.SC_OK);
-                resp.getWriter().write("{\"success\": true, \"message\": \"Registro exitoso.\"}");
+                resp.getWriter().write("{\"success\": true, \"message\": \"Login exitoso.\"}");
             }
-
-        } catch (Exception e) {
+        }catch(Exception e){
             e.printStackTrace();
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            resp.getWriter().write("{\"success\": false, \"message\": \"Error interno: " + e.getMessage() + "\"}");
+            resp.getWriter().write("{\"success\": false, \"message\": \"Error interno.\"}");
         }
     }
 }

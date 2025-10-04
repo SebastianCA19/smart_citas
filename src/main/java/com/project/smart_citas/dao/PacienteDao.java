@@ -51,6 +51,7 @@ public class PacienteDao extends UsuarioDao{
      // Insertar un paciente
     public Integer insertar(String nombre, String primerApellido, String segundoApellido, String email, String clave ) {
         Integer idPaciente = super.insertar(nombre, primerApellido, segundoApellido, email, clave);
+
         String sql = "INSERT INTO pacientes (id_paciente) VALUES (?)";
         try (Connection conn = conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {

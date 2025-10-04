@@ -1,5 +1,5 @@
 document.getElementById("register-form").addEventListener("submit", async function(e) {
-    e.preventDefault(); // evita que recargue la página
+    e.preventDefault();
 
     const clave = document.getElementById("clave").value;
     const confirmar = document.getElementById("confirmar-clave").value;
@@ -12,38 +12,50 @@ document.getElementById("register-form").addEventListener("submit", async functi
             position: "right",
             backgroundColor: "red",
         }).showToast();
-        return; // no enviar nada al backend
+        return;
     }
 
-    const formData = new FormData(this);
+    const data = {
+        nombre: document.getElementById("nombre").value,
+        "primer-apellido": document.getElementById("primer-apellido").value,
+        "segundo-apellido": document.getElementById("segundo-apellido").value,
+        correo: document.getElementById("correo").value,
+        clave: document.getElementById("clave").value
+    };
 
-
-    console.log("URL que se está usando:", contextPath + "/register");
-    console.log("Action del formulario:", this.action);
     try {
         const response = await fetch(this.action, {
             method: "POST",
-            body: formData
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
         });
 
-        const data = await response.json();
+        const result = await response.json();
 
-    Toastify({
-        text: data.message,
-        duration: 3000,
-        gravity: "top",
-        position: "right",
-        backgroundColor: data.success ? "green" : "red",
-    }).showToast();
+        Toastify({
+            text: result.success ? "✓ Registro exitoso, ya puedes iniciar sesión" : "Hubo un error, no te has podido registrar",
+            duration: 3000,
+            gravity: "top",
+            position: "right",
+            backgroundColor: result.success ? "green" : "red",
+            style: {
+                fontWeight: "bold"
+            }
+        }).showToast();
+
 
     } catch (error) {
-        console.log(error);
         Toastify({
         text: "Error inesperado en el servidor.",
         duration: 3000,
         gravity: "top",
         position: "right",
         backgroundColor: "red",
+        style: {
+            fontWeight: "bold"
+        }
         }).showToast();
     }
 });

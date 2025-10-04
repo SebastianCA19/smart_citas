@@ -14,35 +14,37 @@ import java.sql.*;
 public class UsuarioDao extends Dao{
 
     // Insertar un usuario
-    public Integer insertar(String nombre, String primerApellido, String segundoApellido, String email, String clave ) {
+    public Integer insertar(String nombre, String primerApellido, String segundoApellido, String email, String clave) {
         Integer idGenerado = null;
-        String sql = "INSERT INTO usuarios (nombre, primer_apellido, segundo_apellido , email, clave, estado) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO usuarios (nombre, primer_apellido, segundo_apellido, email, clave, estado) VALUES (?, ?, ?, ?, ?, ?)";
+
         try (Connection conn = conectar();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
             stmt.setString(1, nombre);
             stmt.setString(2, primerApellido);
             stmt.setString(3, segundoApellido);
             stmt.setString(4, email);
             stmt.setString(5, clave);
             stmt.setInt(6, 1);
-            stmt.executeUpdate();
-            
+
             int filasInsertadas = stmt.executeUpdate();
+
             if (filasInsertadas > 0) {
-                try(ResultSet rs = stmt.getGeneratedKeys()){
-                    if(rs.next()){
+                try (ResultSet rs = stmt.getGeneratedKeys()) {
+                    if (rs.next()) {
                         idGenerado = rs.getInt(1);
                     }
                 }
-             }
-            
+            }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return idGenerado;
     }
-    
+
+
     // Eliminar usuario por ID
     public boolean eliminar(int id) {
         boolean isEliminado = false;
@@ -59,6 +61,28 @@ public class UsuarioDao extends Dao{
             e.printStackTrace();
         }
         return isEliminado;
+    }
+
+    public Integer obterUsuario(String email, String clave){
+        Integer id = null;
+
+        String sql = "SELECT * FROM usuarios WHERE email = ? AND clave = ?";
+        try(Connection conn = conectar();
+            PreparedStatement stmt = conn.prepareStatement(sql)){
+
+            stmt.setString(1, email);
+            stmt.setString(2, clave);
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                id = rs.getInt(1);
+            }
+
+            return  id;
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return id;
     }
 }
 

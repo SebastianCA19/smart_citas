@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 </head>
 <body>
     <div id="container">
@@ -17,12 +18,12 @@
             <div id="login-container">
                 <h1>Iniciar Sesión</h1>
                 <p>¿No tienes una cuenta?<a style="font-weight: bold;" href="register.jsp">Registrate Aquí.</a></p>
-                <form id="login-form" action="#" method="post">
-                    <label for="email">Correo electrónico:</label>
-                    <input type="email" id="email" name="email" required>
+                <form id="login-form" action="<%=request.getContextPath()%>/login" method="POST">
+                    <label for="correo">Correo electrónico:</label>
+                    <input type="email" id="correo" name="correo" required>
 
-                    <label for="password">Contraseña:</label>
-                    <input type="password" id="password" name="password" required>
+                    <label for="clave">Contraseña:</label>
+                    <input type="password" id="clave" name="clave" required>
 
                     <button type="submit">Iniciar sesión</button>
                 </form>
@@ -33,5 +34,10 @@
             <img src="img/login-image.jpg" alt="login-image">
         </div>
     </div>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script>
+    const contextPath = "<%= request.getContextPath() %>";
+</script>
+<script src="js/handleLogin.js"></script>
 </body>
 </html>
